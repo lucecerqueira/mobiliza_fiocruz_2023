@@ -7,12 +7,25 @@ class ImpulsionamentoForm(forms.Form):
         initial="https://www.instagram.com/p/DgFYs8wFmlV/",
         widget=forms.URLInput(attrs={"class": "form-control", "placeholder": "https://www.instagram.com/p/..."}),
     )
+    tratamento = forms.CharField(
+        max_length=60,
+        required=False,
+        initial="",
+        label="Cargo / Tratamento (opcional)",
+        widget=forms.TextInput(
+            attrs={
+                "class": "form-control",
+                "list": "opcoes-tratamento",
+                "placeholder": "Ex: Ministra, Ministro, Presidente (ou vazio)",
+            }
+        ),
+    )
     arroba_alvo = forms.CharField(
         max_length=80,
         required=False,
         initial="@belchiormiriam",
-        label="Perfil/Autoridade marcada (@)",
-        widget=forms.TextInput(attrs={"class": "form-control"}),
+        label="Perfil marcado (@)",
+        widget=forms.TextInput(attrs={"class": "form-control", "placeholder": "@perfil ou deixe vazio"}),
     )
     hashtag = forms.CharField(
         max_length=80,
@@ -33,10 +46,11 @@ class ImpulsionamentoForm(forms.Form):
         widget=forms.Select(attrs={"class": "form-select"}),
     )
     texto_base = forms.CharField(
-        label="Texto Base (Modelo de referência)",
+        label="Texto Base (Modelo de referência — opcional)",
+        required=False,
         initial=(
             "🇧🇷‼️🇧🇷🇧🇷🇧🇷🇧🇷‼️🇧🇷🇧🇷🇧🇷‼️🇧🇷‼️\n"
-            "Ministra @belchiormiriam, Fiocruz é essencial para o SUS e suas pesquisas impactam diretamente "
+            "@belchiormiriam, a Fiocruz é essencial para o SUS e suas pesquisas impactam diretamente "
             "a vida das pessoas. Convoque os excedentes do último concurso: são centenas de profissionais "
             "qualificados prontos para somar ao SUS! #ConvocaFiocruz\n"
             "🇧🇷‼️🇧🇷🇧🇷🇧🇷🇧🇷‼️🇧🇷🇧🇷🇧🇷‼️🇧🇷‼️"

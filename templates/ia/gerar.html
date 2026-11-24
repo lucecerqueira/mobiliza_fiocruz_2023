@@ -31,21 +31,38 @@
 <form method="post" class="card card-body shadow-sm mb-4">
   {% csrf_token %}
   <div class="row g-3">
-    <div class="col-md-6">
+    <div class="col-md-8">
       <label class="form-label fw-semibold">{{ form.post_url.label }}</label>
       {{ form.post_url }}
     </div>
-    <div class="col-md-2">
+    <div class="col-md-4">
+      <label class="form-label fw-semibold">{{ form.quantidade.label }}</label>
+      {{ form.quantidade }}
+    </div>
+    <div class="col-md-4">
+      <label class="form-label fw-semibold">{{ form.tratamento.label }}</label>
+      {{ form.tratamento }}
+      <datalist id="opcoes-tratamento">
+        <option value="Ministra">
+        <option value="Ministro">
+        <option value="Presidente">
+        <option value="Deputada">
+        <option value="Deputado">
+        <option value="Senadora">
+        <option value="Senador">
+        <option value="Secretária">
+        <option value="Secretário">
+        <option value="Governadora">
+        <option value="Governador">
+      </datalist>
+    </div>
+    <div class="col-md-4">
       <label class="form-label fw-semibold">{{ form.arroba_alvo.label }}</label>
       {{ form.arroba_alvo }}
     </div>
-    <div class="col-md-2">
+    <div class="col-md-4">
       <label class="form-label fw-semibold">{{ form.hashtag.label }}</label>
       {{ form.hashtag }}
-    </div>
-    <div class="col-md-2">
-      <label class="form-label fw-semibold">{{ form.quantidade.label }}</label>
-      {{ form.quantidade }}
     </div>
     <div class="col-12">
       <label class="form-label fw-semibold">{{ form.texto_base.label }}</label>

@@ -6,7 +6,7 @@ from django.views.decorators.http import require_POST
 from apps.publicacoes.models import Publicacao
 from .forms import ImpulsionamentoForm
 from .models import RegistroImpulsionamento
-from .services import gerar_lote_impulsionamento
+from .services import MotorImpulsionamento
 
 
 def gerar(request):
@@ -19,12 +19,13 @@ def gerar(request):
         if form.is_valid():
             post_url = form.cleaned_data["post_url"]
             hashtag_atual = form.cleaned_data["hashtag"] or "#ConvocaFiocruz"
-            variacoes = gerar_lote_impulsionamento(
+            motor = MotorImpulsionamento(
                 texto_base=form.cleaned_data["texto_base"],
-                quantidade=int(form.cleaned_data["quantidade"]),
                 arroba_custom=form.cleaned_data["arroba_alvo"],
                 hashtag_custom=hashtag_atual,
+                tratamento=form.cleaned_data["tratamento"],
             )
+            variacoes = motor.gerar_lote(quantidade=int(form.cleaned_data["quantidade"]))
 
             if request.POST.get("registrar_post") == "1":
                 Publicacao.objects.get_or_create(
