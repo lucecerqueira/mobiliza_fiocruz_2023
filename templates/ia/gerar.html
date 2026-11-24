@@ -3,7 +3,7 @@
 <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
   <div>
     <h1 class="h3 mb-1">Motor de Impulsionamento</h1>
-    <p class="text-secondary mb-0">Gere até 200 variações únicas, copie com 1 clique e acompanhe os disparos registrados.</p>
+    <p class="text-secondary mb-0">Gere até 200 variações únicas, copie com 1 clique e vá direto para o post alvo.</p>
   </div>
   {% if post_url %}
   <a href="{{ post_url }}" target="_blank" rel="noopener noreferrer" class="btn btn-outline-danger fw-semibold">
@@ -14,29 +14,16 @@
 
 <!-- PAINEL DE AUDITORIA EM TEMPO REAL -->
 <div class="row g-3 mb-4">
-  <div class="col-md-4">
+  <div class="col-md-6">
     <div class="card card-body border-success h-100">
       <div class="small text-secondary fw-semibold">Textos Copiados (Total Geral)</div>
       <div class="fs-2 fw-bold text-success" id="kpi-total-copiados">{{ total_copiados }}</div>
     </div>
   </div>
-  <div class="col-md-4">
+  <div class="col-md-6">
     <div class="card card-body border-primary h-100">
       <div class="small text-secondary fw-semibold">Redirecionamentos para o Post Alvo</div>
       <div class="fs-2 fw-bold text-primary" id="kpi-total-abertos">{{ total_abertos }}</div>
-    </div>
-  </div>
-  <div class="col-md-4">
-    <div class="card card-body h-100">
-      <div class="small text-secondary fw-semibold mb-1">Participação por Usuário</div>
-      {% for item in ranking_usuarios %}
-        <div class="d-flex justify-content-between small">
-          <span>{{ item.usuario__username|default:"Anônimo" }}</span>
-          <span class="badge text-bg-dark">{{ item.total }}</span>
-        </div>
-      {% empty %}
-        <span class="small text-muted">Nenhum disparo registrado ainda.</span>
-      {% endfor %}
     </div>
   </div>
 </div>
@@ -122,7 +109,7 @@
       <thead class="table-light">
         <tr>
           <th>Data/Hora</th>
-          <th>Participante</th>
+          <th>Hashtag</th>
           <th>Ação</th>
           <th>Trecho do Texto</th>
         </tr>
@@ -131,7 +118,7 @@
         {% for reg in ultimos_registros %}
         <tr>
           <td class="small text-nowrap">{{ reg.criado_em|date:"d/m/Y H:i:s" }}</td>
-          <td class="small fw-semibold">{{ reg.usuario.username|default:"Anônimo" }}</td>
+          <td class="small fw-semibold">{{ reg.hashtag|default:"-" }}</td>
           <td>
             {% if reg.abriu_post %}
               <span class="badge text-bg-primary">Copiou + Abriu Post</span>
@@ -166,7 +153,6 @@ function copiarTexto(btn, abrirPost) {
       card.classList.add('border-success');
     }
 
-    // Grava no PostgreSQL via POST
     fetch("{% url 'ia_registrar_clique' %}", {
       method: "POST",
       headers: {

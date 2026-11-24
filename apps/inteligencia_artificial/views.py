@@ -1,7 +1,5 @@
 import json
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
-from django.db.models import Count
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.views.decorators.http import require_POST
@@ -11,7 +9,6 @@ from .models import RegistroImpulsionamento
 from .services import gerar_lote_impulsionamento
 
 
-@login_required
 def gerar(request):
     variacoes = []
     post_url = "https://www.instagram.com/p/DgFYs8wFmlV/"
@@ -49,15 +46,9 @@ def gerar(request):
     else:
         form = ImpulsionamentoForm()
 
-    # Auditoria em tempo real do banco de dados
     total_copiados = RegistroImpulsionamento.objects.count()
     total_abertos = RegistroImpulsionamento.objects.filter(abriu_post=True).count()
-    ultimos_registros = RegistroImpulsionamento.objects.select_related("usuario")[:15]
-    ranking_usuarios = (
-        RegistroImpulsionamento.objects.values("usuario__username")
-        .annotate(total=Count("id"))
-        .order_by("-total")[:10]
-    )
+    ultimos_registros = RegistroImpulsionamento.objects.all()[:15]
 
     return render(
         request,
@@ -70,18 +61,16 @@ def gerar(request):
             "total_copiados": total_copiados,
             "total_abertos": total_abertos,
             "ultimos_registros": ultimos_registros,
-            "ranking_usuarios": ranking_usuarios,
         },
     )
 
 
-@login_required
 @require_POST
 def registrar_clique(request):
     try:
         dados = json.loads(request.body)
         RegistroImpulsionamento.objects.create(
-            usuario=request.user,
+            usuario=request.user if request.user.is_authenticated else None,
             post_url=dados.get("post_url", ""),
             hashtag=dados.get("hashtag", ""),
             texto_utilizado=dados.get("texto", ""),
