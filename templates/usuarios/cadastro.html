@@ -1,0 +1,5 @@
+{% extends "base.html" %}{% block content %}
+<h1 class="h3 mb-3">Cadastro voluntário</h1>
+<p class="text-secondary">Solicitamos apenas os dados necessários para acesso e comunicação. Não informe CPF, número de inscrição ou senha de redes sociais.</p>
+<form method="post" class="card card-body" style="max-width:620px">{% csrf_token %}{{ form.as_p }}<button class="btn btn-success">Criar cadastro</button></form>
+{% endblock %}

@@ -1,0 +1,218 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+  <div>
+    <h1 class="h3 mb-1">Motor de Impulsionamento</h1>
+    <p class="text-secondary mb-0">Gere até 200 variações únicas, copie com 1 clique e acompanhe os disparos registrados.</p>
+  </div>
+  {% if post_url %}
+  <a href="{{ post_url }}" target="_blank" rel="noopener noreferrer" class="btn btn-outline-danger fw-semibold">
+    Conferir Comentários no Post Alvo
+  </a>
+  {% endif %}
+</div>
+
+<!-- PAINEL DE AUDITORIA EM TEMPO REAL -->
+<div class="row g-3 mb-4">
+  <div class="col-md-4">
+    <div class="card card-body border-success h-100">
+      <div class="small text-secondary fw-semibold">Textos Copiados (Total Geral)</div>
+      <div class="fs-2 fw-bold text-success" id="kpi-total-copiados">{{ total_copiados }}</div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card card-body border-primary h-100">
+      <div class="small text-secondary fw-semibold">Redirecionamentos para o Post Alvo</div>
+      <div class="fs-2 fw-bold text-primary" id="kpi-total-abertos">{{ total_abertos }}</div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card card-body h-100">
+      <div class="small text-secondary fw-semibold mb-1">Participação por Usuário</div>
+      {% for item in ranking_usuarios %}
+        <div class="d-flex justify-content-between small">
+          <span>{{ item.usuario__username|default:"Anônimo" }}</span>
+          <span class="badge text-bg-dark">{{ item.total }}</span>
+        </div>
+      {% empty %}
+        <span class="small text-muted">Nenhum disparo registrado ainda.</span>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<form method="post" class="card card-body shadow-sm mb-4">
+  {% csrf_token %}
+  <div class="row g-3">
+    <div class="col-md-6">
+      <label class="form-label fw-semibold">{{ form.post_url.label }}</label>
+      {{ form.post_url }}
+    </div>
+    <div class="col-md-2">
+      <label class="form-label fw-semibold">{{ form.arroba_alvo.label }}</label>
+      {{ form.arroba_alvo }}
+    </div>
+    <div class="col-md-2">
+      <label class="form-label fw-semibold">{{ form.hashtag.label }}</label>
+      {{ form.hashtag }}
+    </div>
+    <div class="col-md-2">
+      <label class="form-label fw-semibold">{{ form.quantidade.label }}</label>
+      {{ form.quantidade }}
+    </div>
+    <div class="col-12">
+      <label class="form-label fw-semibold">{{ form.texto_base.label }}</label>
+      {{ form.texto_base }}
+    </div>
+  </div>
+  <div class="d-flex flex-wrap gap-2 mt-3">
+    <button type="submit" class="btn btn-success btn-lg fw-semibold">
+      Gerar Lote de Variações
+    </button>
+    <button type="submit" name="registrar_post" value="1" class="btn btn-outline-primary">
+      Gerar e Salvar Post Alvo
+    </button>
+  </div>
+</form>
+
+{% if variacoes %}
+<div class="card shadow-sm mb-4">
+  <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center flex-wrap gap-2">
+    <span class="fw-semibold">{{ variacoes|length }} variações prontas · Usadas nesta sessão: <span id="contador-usadas" class="badge text-bg-success">0</span></span>
+    <div class="d-flex gap-2">
+      <input type="text" id="filtro-texto" class="form-control form-control-sm" placeholder="Filtrar variações..." onkeyup="filtrarVariacoes()">
+      <button type="button" class="btn btn-sm btn-outline-light" onclick="baixarTxt()">Baixar .TXT</button>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="row g-3" id="lista-variacoes">
+      {% for texto in variacoes %}
+      <div class="col-md-6 item-variacao">
+        <div class="card h-100 border">
+          <div class="card-body d-flex flex-column justify-content-between">
+            <div>
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="badge text-bg-secondary">#{{ forloop.counter }}</span>
+                <span class="badge text-bg-light status-uso">Disponível</span>
+              </div>
+              <pre class="mb-3 small texto-comentario" style="white-space: pre-wrap;">{{ texto }}</pre>
+            </div>
+            <div class="d-flex gap-2">
+              <button type="button" class="btn btn-sm btn-success flex-grow-1" onclick="copiarTexto(this, false)">
+                Copiar
+              </button>
+              <button type="button" class="btn btn-sm btn-primary flex-grow-1" onclick="copiarTexto(this, true)">
+                Copiar e Abrir Post
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<!-- HISTÓRICO DOS ÚLTIMOS DISPAROS -->
+<div class="card shadow-sm">
+  <div class="card-header fw-semibold">Últimos Textos Copiados/Disparados (Log de Auditoria)</div>
+  <div class="table-responsive">
+    <table class="table table-sm table-hover mb-0">
+      <thead class="table-light">
+        <tr>
+          <th>Data/Hora</th>
+          <th>Participante</th>
+          <th>Ação</th>
+          <th>Trecho do Texto</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for reg in ultimos_registros %}
+        <tr>
+          <td class="small text-nowrap">{{ reg.criado_em|date:"d/m/Y H:i:s" }}</td>
+          <td class="small fw-semibold">{{ reg.usuario.username|default:"Anônimo" }}</td>
+          <td>
+            {% if reg.abriu_post %}
+              <span class="badge text-bg-primary">Copiou + Abriu Post</span>
+            {% else %}
+              <span class="badge text-bg-success">Copiou</span>
+            {% endif %}
+          </td>
+          <td class="small text-secondary">{{ reg.texto_utilizado|truncatechars:90 }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="4" class="text-center text-muted py-3">Nenhum registro encontrado ainda.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+let totalUsadas = 0;
+
+function copiarTexto(btn, abrirPost) {
+  const card = btn.closest('.card');
+  const texto = card.querySelector('.texto-comentario').innerText;
+
+  navigator.clipboard.writeText(texto).then(() => {
+    const badge = card.querySelector('.status-uso');
+    if (badge.innerText !== 'Copiado') {
+      totalUsadas += 1;
+      document.getElementById('contador-usadas').innerText = totalUsadas;
+      badge.innerText = 'Copiado';
+      badge.className = 'badge text-bg-success status-uso';
+      card.classList.add('border-success');
+    }
+
+    // Grava no PostgreSQL via POST
+    fetch("{% url 'ia_registrar_clique' %}", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": "{{ csrf_token }}"
+      },
+      body: JSON.stringify({
+        post_url: "{{ post_url|escapejs }}",
+        hashtag: "{{ hashtag_atual|escapejs }}",
+        texto: texto,
+        abriu_post: abrirPost
+      })
+    })
+    .then(r => r.json())
+    .then(data => {
+      if (data.status === "ok") {
+        document.getElementById('kpi-total-copiados').innerText = data.total_copiados;
+        document.getElementById('kpi-total-abertos').innerText = data.total_abertos;
+      }
+    });
+
+    const textoOriginal = btn.innerText;
+    btn.innerText = 'Copiado!';
+    setTimeout(() => { btn.innerText = textoOriginal; }, 1500);
+
+    if (abrirPost) {
+      window.open("{{ post_url|escapejs }}", "_blank", "noopener,noreferrer");
+    }
+  });
+}
+
+function filtrarVariacoes() {
+  const termo = document.getElementById('filtro-texto').value.toLowerCase();
+  document.querySelectorAll('.item-variacao').forEach(el => {
+    const conteudo = el.innerText.toLowerCase();
+    el.style.display = conteudo.includes(termo) ? '' : 'none';
+  });
+}
+
+function baixarTxt() {
+  const blocos = Array.from(document.querySelectorAll('.texto-comentario')).map((el, i) => `--- Variação ${i + 1} ---\n${el.innerText}`);
+  const blob = new Blob([blocos.join('\n\n')], { type: 'text/plain;charset=utf-8' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = 'variacoes_impulsionamento_fiocruz.txt';
+  link.click();
+}
+</script>
+{% endblock %}

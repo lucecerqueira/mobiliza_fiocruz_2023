@@ -1,0 +1,2 @@
+{% extends "base.html" %}{% block content %}<h1 class="h3">Publicações acompanhadas</h1>
+{% for p in publicacoes %}<div class="card mb-3"><div class="card-body"><div class="d-flex justify-content-between flex-wrap gap-2"><h2 class="h5">{{ p.titulo }}</h2><span class="badge text-bg-light">{{ p.get_instituicao_display }}</span></div><p>{{ p.resumo|default:p.texto_publicacao|truncatewords:45 }}</p><a href="{{ p.url }}" target="_blank" rel="noopener noreferrer">Abrir publicação original</a></div></div>{% empty %}<p>Nenhuma publicação cadastrada.</p>{% endfor %}{% endblock %}

@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="p-4 p-md-5 mb-4 bg-light rounded-3">
+  <div class="col-lg-9">
+    <span class="badge text-bg-success mb-2">Participação cidadã</span>
+    <h1 class="display-5 fw-bold">Fortalecer a Fiocruz é fortalecer o SUS.</h1>
+    <p class="lead">Espaço independente para organizar informações, materiais e participação voluntária em defesa da avaliação de novas autorizações de nomeação para candidatos aprovados e ainda não convocados.</p>
+    <a class="btn btn-success btn-lg" href="{% url 'publicacoes_lista' %}">Acompanhar publicações</a>
+  </div>
+</section>
+<div class="row g-3 mb-4">
+  <div class="col-6 col-lg-3"><div class="card card-body h-100"><div class="text-secondary small">Campanhas</div><div class="fs-2 fw-bold">{{ total_campanhas }}</div></div></div>
+  <div class="col-6 col-lg-3"><div class="card card-body h-100"><div class="text-secondary small">Publicações cadastradas</div><div class="fs-2 fw-bold">{{ total_publicacoes }}</div></div></div>
+  <div class="col-6 col-lg-3"><div class="card card-body h-100"><div class="text-secondary small">Materiais</div><div class="fs-2 fw-bold">{{ total_conteudos }}</div></div></div>
+  <div class="col-6 col-lg-3"><div class="card card-body h-100"><div class="text-secondary small">Participantes com consentimento</div><div class="fs-2 fw-bold">{{ total_participantes }}</div></div></div>
+</div>
+<div class="row g-4">
+  <div class="col-lg-8">
+    <h2 class="h4">Campanhas</h2>
+    {% for campanha in campanhas %}
+      <div class="card mb-2"><div class="card-body"><div class="d-flex justify-content-between"><strong>{{ campanha.titulo }}</strong><span class="badge text-bg-secondary">{{ campanha.get_status_display }}</span></div><p class="mb-0 mt-2">{{ campanha.objetivo|truncatewords:35 }}</p></div></div>
+    {% empty %}<div class="alert alert-info">Nenhuma campanha cadastrada. Crie a primeira pelo painel administrativo.</div>{% endfor %}
+  </div>
+  <div class="col-lg-4">
+    <h2 class="h4">Como participar</h2>
+    <ol><li>Consulte as informações e fontes.</li><li>Compartilhe materiais da campanha se concordar com seu conteúdo.</li><li>Manifeste sua opinião de forma autêntica e respeitosa.</li><li>Não divulgue dados pessoais de terceiros.</li></ol>
+    <a href="/admin/" class="btn btn-outline-secondary btn-sm">Administração</a>
+  </div>
+</div>
+{% endblock %}

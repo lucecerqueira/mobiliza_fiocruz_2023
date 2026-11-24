@@ -1,0 +1,2 @@
+{% extends "base.html" %}{% block content %}<h1 class="h3">Campanhas</h1>
+{% for c in object_list %}<div class="card mb-2"><div class="card-body"><h2 class="h5">{{ c.titulo }}</h2><p>{{ c.objetivo }}</p><span class="badge text-bg-secondary">{{ c.get_status_display }}</span></div></div>{% empty %}<p>Nenhuma campanha cadastrada.</p>{% endfor %}{% endblock %}
