@@ -49,12 +49,12 @@ class MotorImpulsionamento:
         "Autorize a convocação dos excedentes do concurso Fiocruz 2023 agora!",
         "Libere a nomeação dos aprovados excedentes e fortaleça o SUS!",
         "Convoque os excedentes aprovados! O Brasil precisa desses profissionais atuando na saúde pública.",
-        "Dê o próximo passo pelo fortalecimento do SUS e autorize a chamada dos excedentes da Fiocruz!",
-        "Nomeie os excedentes do último certame: a saúde pública brasileira agradece!",
-        "Autorize a convocação imediata dos excedentes aprovados no concurso da Fiocruz!",
-        "Convoque os aprovados excedentes e garanta mais força de trabalho para a ciência nacional!",
-        "O SUS precisa desses especialistas! Autorize a convocação dos excedentes da Fiocruz.",
-        "Chamada dos excedentes já! Profissionais prontos para servir ao SUS e à ciência.",
+        "Dê o próximo passo pelo fortalecimento do SUS e autorize a chamada de todos os excedentes da Fiocruz!",
+        "Nomeie todos os excedentes do último certame: a saúde pública brasileira agradece!",
+        "Autorize a convocação imediata de todos os excedentes aprovados no concurso da Fiocruz!",
+        "Convoque todos os aprovados excedentes e garanta mais força de trabalho para a ciência nacional!",
+        "O SUS precisa desses especialistas! Autorize a convocação de todos os excedentes da Fiocruz.",
+        "Chamada de todos os excedentes já! Profissionais prontos para servir ao SUS e à ciência.",
     ]
 
     MOLDURAS_EMOJI = [
