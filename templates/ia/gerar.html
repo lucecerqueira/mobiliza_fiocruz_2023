@@ -31,11 +31,15 @@
 <form method="post" class="card card-body shadow-sm mb-4">
   {% csrf_token %}
   <div class="row g-3">
-    <div class="col-md-8">
+    <div class="col-md-6">
       <label class="form-label fw-semibold">{{ form.post_url.label }}</label>
       {{ form.post_url }}
     </div>
-    <div class="col-md-4">
+    <div class="col-md-3">
+      <label class="form-label fw-semibold">{{ form.estilo.label }}</label>
+      {{ form.estilo }}
+    </div>
+    <div class="col-md-3">
       <label class="form-label fw-semibold">{{ form.quantidade.label }}</label>
       {{ form.quantidade }}
     </div>

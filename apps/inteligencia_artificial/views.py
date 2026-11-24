@@ -24,6 +24,7 @@ def gerar(request):
                 arroba_custom=form.cleaned_data["arroba_alvo"],
                 hashtag_custom=hashtag_atual,
                 tratamento=form.cleaned_data["tratamento"],
+                estilo=form.cleaned_data["estilo"],
             )
             variacoes = motor.gerar_lote(quantidade=int(form.cleaned_data["quantidade"]))
 

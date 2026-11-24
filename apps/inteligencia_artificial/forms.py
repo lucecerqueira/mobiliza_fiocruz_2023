@@ -7,6 +7,18 @@ class ImpulsionamentoForm(forms.Form):
         initial="https://www.instagram.com/p/DgFYs8wFmlV/",
         widget=forms.URLInput(attrs={"class": "form-control", "placeholder": "https://www.instagram.com/p/..."}),
     )
+    estilo = forms.ChoiceField(
+        label="Estilo dos textos",
+        choices=[
+            ("misto", "Misto (Recomendado — Anti-spam)"),
+            ("curto", "Curto e direto"),
+            ("pergunta", "Pergunta direta (gera respostas)"),
+            ("impacto", "Impacto concreto no SUS"),
+            ("institucional", "Institucional / técnico"),
+        ],
+        initial="misto",
+        widget=forms.Select(attrs={"class": "form-select"}),
+    )
     tratamento = forms.CharField(
         max_length=60,
         required=False,
@@ -46,14 +58,12 @@ class ImpulsionamentoForm(forms.Form):
         widget=forms.Select(attrs={"class": "form-select"}),
     )
     texto_base = forms.CharField(
-        label="Texto Base (Modelo de referência — opcional)",
+        label="Texto Base (opcional — incluído como variação #1 se preenchido)",
         required=False,
         initial=(
-            "🇧🇷‼️🇧🇷🇧🇷🇧🇷🇧🇷‼️🇧🇷🇧🇷🇧🇷‼️🇧🇷‼️\n"
             "@belchiormiriam, a Fiocruz é essencial para o SUS e suas pesquisas impactam diretamente "
-            "a vida das pessoas. Convoque os excedentes do último concurso: são centenas de profissionais "
-            "qualificados prontos para somar ao SUS! #ConvocaFiocruz\n"
-            "🇧🇷‼️🇧🇷🇧🇷🇧🇷🇧🇷‼️🇧🇷🇧🇷🇧🇷‼️🇧🇷‼️"
+            "a vida das pessoas. Convoque todos os excedentes do último concurso: são centenas de "
+            "profissionais qualificados prontos para somar ao SUS! #ConvocaFiocruz"
         ),
-        widget=forms.Textarea(attrs={"rows": 5, "class": "form-control"}),
+        widget=forms.Textarea(attrs={"rows": 4, "class": "form-control"}),
     )
