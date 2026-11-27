@@ -21,10 +21,6 @@
     <div class="collapse navbar-collapse" id="menu">
       <ul class="navbar-nav me-auto">
         <li class="nav-item"><a class="nav-link" href="{% url 'ia_gerar' %}">Motor de Impulsionamento</a></li>
-        <!-- <li class="nav-item"><a class="nav-link" href="{% url 'campanhas_lista' %}">Campanhas</a></li>
-        <li class="nav-item"><a class="nav-link" href="{% url 'publicacoes_lista' %}">Publicações</a></li>
-        <li class="nav-item"><a class="nav-link" href="{% url 'conteudos_lista' %}">Conteúdos</a></li>
-        <li class="nav-item"><a class="nav-link" href="{% url 'tarefas_lista' %}">Participação</a></li> -->
       </ul>
     </div>
   </div>
@@ -35,5 +31,109 @@
 </main>
 <footer class="border-top py-4 mt-5"><div class="container small text-secondary">Iniciativa independente de participação cidadã. Não representa oficialmente a Fiocruz ou o Governo Federal. Verifique informações e fontes antes de compartilhar.</div></footer>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const PLACEHOLDERS_PADRAO = {
+    url: "https://www.instagram.com/p/DgFYs8wFmlV/",
+    cargo: "Ex: Ministra, Ministro, Presidente (ou vazio)",
+    perfil: "@belchiormiriam",
+    hashtag: "#ConvocaFiocruz",
+    texto_base: "@belchiormiriam, a Fiocruz é essencial para o SUS e suas pesquisas impactam diretamente a vida das pessoas. Convoque todos os excedentes do último concurso: são centenas de profissionais qualificados prontos para somar ao SUS! #ConvocaFiocruz"
+  };
+
+  const form = document.querySelector("form");
+  if (!form) return;
+
+  const inputs = Array.from(form.querySelectorAll("input[type='text'], input[type='url'], input:not([type]), textarea"));
+
+  inputs.forEach((el) => {
+    const identificador = (el.name + " " + el.id + " " + (el.labels?.[0]?.textContent || "")).toLowerCase();
+    let chave = null;
+
+    if (el.tagName === "TEXTAREA" || identificador.includes("texto") || identificador.includes("base")) {
+      chave = "texto_base";
+    } else if (identificador.includes("link") || identificador.includes("url") || identificador.includes("post")) {
+      chave = "url";
+    } else if (identificador.includes("cargo") || identificador.includes("tratamento")) {
+      chave = "cargo";
+    } else if (identificador.includes("perfil") || identificador.includes("arroba") || identificador.includes("@")) {
+      chave = "perfil";
+    } else if (identificador.includes("hashtag") || identificador.includes("tag") || identificador.includes("#")) {
+      chave = "hashtag";
+    }
+
+    if (chave && PLACEHOLDERS_PADRAO[chave]) {
+      // Converte valor inicial pré-preenchido idêntico ao exemplo em placeholder limpo
+      if (el.value.trim() === PLACEHOLDERS_PADRAO[chave]) {
+        el.value = "";
+      }
+      el.placeholder = PLACEHOLDERS_PADRAO[chave];
+    }
+
+    // ENTER ativa o placeholder se o campo estiver vazio
+    el.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" && !e.shiftKey) {
+        if (!el.value.trim() && el.placeholder && !el.placeholder.startsWith("Ex:")) {
+          e.preventDefault();
+          el.value = el.placeholder;
+          el.dispatchEvent(new Event("input", { bubbles: true }));
+          if (chave === "texto_base") {
+            adaptarTematicaPorTexto(el.value);
+          }
+        }
+      }
+    });
+
+    // PASTE no Texto Base detecta e adapta a temática automaticamente
+    if (chave === "texto_base") {
+      el.addEventListener("paste", function (e) {
+        setTimeout(() => {
+          const textoColado = el.value.trim();
+          if (textoColado) {
+            adaptarTematicaPorTexto(textoColado);
+          }
+        }, 20);
+      });
+    }
+  });
+
+  function adaptarTematicaPorTexto(texto) {
+    // 1. Extrai @perfil e #hashtag do texto colado e preenche os campos correspondentes se vazios
+    const matchPerfil = texto.match(/@[a-zA-Z0-9_.]+/);
+    const matchHashtag = texto.match(/#[a-zA-Z0-9_À-ÿ]+/);
+
+    inputs.forEach((el) => {
+      const iden = (el.name + " " + el.id).toLowerCase();
+      if (matchPerfil && (iden.includes("perfil") || iden.includes("arroba")) && !el.value.trim()) {
+        el.value = matchPerfil[0];
+      }
+      if (matchHashtag && (iden.includes("hashtag") || iden.includes("tag")) && !el.value.trim()) {
+        el.value = matchHashtag[0];
+      }
+    });
+
+    // 2. Cria/atualiza campo hidden "tematica_adaptada" para o backend adaptar todas as frases
+    let hiddenTema = form.querySelector("input[name='tematica_adaptada']");
+    if (!hiddenTema) {
+      hiddenTema = document.createElement("input");
+      hiddenTema.type = "hidden";
+      hiddenTema.name = "tematica_adaptada";
+      form.appendChild(hiddenTema);
+    }
+    hiddenTema.value = texto;
+
+    // 3. Feedback visual discreto de que a temática foi capturada
+    let badge = document.getElementById("badge-tematica-adaptada");
+    if (!badge) {
+      badge = document.createElement("div");
+      badge.id = "badge-tematica-adaptada";
+      badge.className = "form-text text-success fw-semibold mt-1";
+      const textarea = form.querySelector("textarea");
+      if (textarea) textarea.parentNode.appendChild(badge);
+    }
+    badge.textContent = "✓ Temática detectada: as variações geradas serão adaptadas ao contexto do texto colado.";
+  }
+});
+</script>
 </body>
 </html>
